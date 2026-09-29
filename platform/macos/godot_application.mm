@@ -57,6 +57,10 @@ GodotApplication *GodotApp = nil;
 }
 
 - (void)activateApplication {
+	// HOME: agents' test runs leave focus to the person at the Mac (2026-09-28).
+	if (getenv("GODOT_NO_ACTIVATE") != nullptr) {
+		return;
+	}
 	[NSApp activateIgnoringOtherApps:YES];
 	NSString *nsappname = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
 	const char *bundled_id = getenv("__CFBundleIdentifier");

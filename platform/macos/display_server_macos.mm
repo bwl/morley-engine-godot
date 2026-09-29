@@ -2756,7 +2756,10 @@ void DisplayServerMacOS::window_move_to_foreground(DisplayServerEnums::WindowID 
 	ERR_FAIL_COND(!windows.has(p_window));
 	const WindowData &wd = windows[p_window];
 
-	[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+	// HOME: agents' test runs leave focus to the person at the Mac (2026-09-28).
+	if (getenv("GODOT_NO_ACTIVATE") == nullptr) {
+		[[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+	}
 	if (wd.no_focus || wd.is_popup) {
 		if (wd.transient_parent != DisplayServerEnums::INVALID_WINDOW_ID) {
 			WindowData &wd_parent = windows[wd.transient_parent];

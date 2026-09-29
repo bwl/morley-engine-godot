@@ -201,6 +201,11 @@ void Input::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_mouse_button_mask"), &Input::get_mouse_button_mask);
 	ClassDB::bind_method(D_METHOD("set_mouse_mode", "mode"), &Input::set_mouse_mode);
 	ClassDB::bind_method(D_METHOD("get_mouse_mode"), &Input::get_mouse_mode);
+	// HOME: agents' test runs keep their hands off the mouse (2026-09-28).
+	ClassDB::bind_method(D_METHOD("set_mouse_mode_override", "mode"), &Input::set_mouse_mode_override);
+	ClassDB::bind_method(D_METHOD("get_mouse_mode_override"), &Input::get_mouse_mode_override);
+	ClassDB::bind_method(D_METHOD("set_mouse_mode_override_enabled", "enabled"), &Input::set_mouse_mode_override_enabled);
+	ClassDB::bind_method(D_METHOD("is_mouse_mode_override_enabled"), &Input::is_mouse_mode_override_enabled);
 	ClassDB::bind_method(D_METHOD("warp_mouse", "position"), &Input::warp_mouse);
 	ClassDB::bind_method(D_METHOD("action_press", "action", "strength"), &Input::action_press, DEFVAL(1.f));
 	ClassDB::bind_method(D_METHOD("action_release", "action"), &Input::action_release);
