@@ -220,7 +220,8 @@ void RendererSceneCull::_instance_pair(Instance *p_A, Instance *p_B) {
 		geom->lights.insert(B);
 		light->geometries.insert(A);
 
-		if (geom->can_cast_shadows) {
+		// Only a caster within the light's shadow caster mask draws into its shadow.
+		if (geom->can_cast_shadows && (A->layer_mask & RSG::light_storage->light_get_shadow_caster_mask(B->base))) {
 			light->make_shadow_dirty();
 		}
 
@@ -345,7 +346,7 @@ void RendererSceneCull::_instance_unpair(Instance *p_A, Instance *p_B) {
 		geom->lights.erase(B);
 		light->geometries.erase(A);
 
-		if (geom->can_cast_shadows) {
+		if (geom->can_cast_shadows && (A->layer_mask & RSG::light_storage->light_get_shadow_caster_mask(B->base))) {
 			light->make_shadow_dirty();
 		}
 
@@ -1730,10 +1731,14 @@ void RendererSceneCull::_update_instance(Instance *p_instance) const {
 
 	if ((1 << p_instance->base_type) & RSE::INSTANCE_GEOMETRY_MASK) {
 		InstanceGeometryData *geom = static_cast<InstanceGeometryData *>(p_instance->base_data);
-		//make sure lights are updated if it casts shadow
+		//make sure lights are updated if it casts shadow (into them: a caster outside a light's shadow caster mask
+		//never draws into its shadow, so moving or animating it must not redraw that shadow)
 
 		if (geom->can_cast_shadows) {
 			for (const Instance *E : geom->lights) {
+				if (!(p_instance->layer_mask & RSG::light_storage->light_get_shadow_caster_mask(E->base))) {
+					continue;
+				}
 				InstanceLightData *light = static_cast<InstanceLightData *>(E->base_data);
 				light->make_shadow_dirty();
 			}
